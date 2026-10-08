@@ -1,23 +1,15 @@
 import { isValidEmail, lockScroll, unlockScroll } from './utils.js';
 
-// ── CONFIG ────────────────────────────────────────────────
-// When you're ready to connect Shopify, fill these in:
-// 1. Go to Shopify Admin → Settings → Apps and Sales Channels → Develop Apps
-// 2. Create an app, give it write_customers scope
-// 3. Paste your store URL and Storefront API token below
-// 4. Remove the SHOPIFY_ENABLED = false line
+// Gate state — unlocked if they came back from Vouched with the param
+const params = new URLSearchParams(window.location.search);
+let unlocked = sessionStorage.getItem('oth_unlocked') === '1' || params.get('ref') === 'vouched';
 
-const SHOPIFY_ENABLED   = false; // flip to true when ready
-const SHOPIFY_STORE_URL = 'YOUR_STORE.myshopify.com';
-const SHOPIFY_API_TOKEN = 'YOUR_STOREFRONT_API_TOKEN';
-const SHOPIFY_TAG       = 'on-the-house';
-
-// ── GATE STATE ────────────────────────────────────────────
-let unlocked = sessionStorage.getItem('oth_unlocked') === '1';
+if (params.get('ref') === 'vouched') {
+  sessionStorage.setItem('oth_unlocked', '1');
+}
 
 export function isUnlocked() { return unlocked; }
 
-// ── SHOW / HIDE ───────────────────────────────────────────
 export function showGate() {
   if (unlocked) return;
   const gate = document.getElementById('gate');
@@ -32,136 +24,58 @@ export function hideGate() {
   unlockScroll();
 }
 
-// ── SUBMIT ────────────────────────────────────────────────
-export async function submitGate(onSuccess) {
-  const emailEl  = document.getElementById('gate-email');
-  const nameEl   = document.getElementById('gate-name');
-  const venueEl  = document.getElementById('gate-venue');
-  const submitEl = document.getElementById('gate-submit');
+export function submitGate() {
+  const emailEl = document.getElementById('gate-email');
+  const email   = emailEl?.value.trim() || '';
+  const venue   = document.getElementById('gate-venue')?.value.trim() || '';
 
-  const email = emailEl?.value.trim() || '';
-  const name  = nameEl?.value.trim()  || '';
-  const venue = venueEl?.value.trim() || '';
-
-  // Validate
   if (!isValidEmail(email)) {
     emailEl.classList.add('is-error');
     emailEl.focus();
-    emailEl.placeholder = 'Please enter a valid email';
     return;
   }
-  emailEl.classList.remove('is-error');
 
-  // Loading state
-  if (submitEl) {
-    submitEl.textContent = 'SENDING...';
-    submitEl.disabled = true;
-  }
-
-  try {
-    if (SHOPIFY_ENABLED) {
-      await addToShopify({ email, name, venue });
-    }
-    // Regardless of Shopify, unlock
-    unlock(onSuccess);
-  } catch (err) {
-    console.error('Shopify signup error:', err);
-    // Still unlock — don't block the user because of an API error
-    unlock(onSuccess);
-  } finally {
-    if (submitEl) {
-      submitEl.textContent = 'GET FREE ACCESS →';
-      submitEl.disabled = false;
-    }
-  }
-}
-
-function unlock(onSuccess) {
-  unlocked = true;
-  sessionStorage.setItem('oth_unlocked', '1');
-  hideGate();
-  onSuccess?.();
-}
-
-// ── SHOPIFY API ───────────────────────────────────────────
-async function addToShopify({ email, name, venue }) {
-  const [firstName, ...rest] = name.split(' ');
-  const lastName = rest.join(' ');
-
-  const mutation = `
-    mutation customerCreate($input: CustomerCreateInput!) {
-      customerCreate(input: $input) {
-        customer { id email }
-        userErrors { field message }
-      }
-    }
-  `;
-
-  const variables = {
-    input: {
-      email,
-      firstName: firstName || '',
-      lastName:  lastName  || '',
-      tags:      [SHOPIFY_TAG, venue ? `venue:${venue}` : ''].filter(Boolean),
-      acceptsMarketing: true
-    }
-  };
-
-  const res = await fetch(`https://${SHOPIFY_STORE_URL}/api/2024-01/graphql.json`, {
-    method: 'POST',
-    headers: {
-      'Content-Type':              'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_API_TOKEN
-    },
-    body: JSON.stringify({ query: mutation, variables })
+  // Build Vouched sign-up URL with email pre-filled and ref param
+  const params = new URLSearchParams({
+    email,
+    ref: 'on-the-house',
+    ...(venue && { venue })
   });
 
-  if (!res.ok) throw new Error(`Shopify API ${res.status}`);
-  const data = await res.json();
-  const errors = data?.data?.customerCreate?.userErrors;
-  if (errors?.length) {
-    // Email already exists is fine — they're already in the system
-    const alreadyExists = errors.some(e => e.message?.toLowerCase().includes('already'));
-    if (!alreadyExists) throw new Error(errors[0].message);
-  }
+  // Redirect to Vouched sign-up
+  window.location.href = `https://imvouched.co.uk/app.html?${params.toString()}`;
 }
 
-// ── INIT ──────────────────────────────────────────────────
 export function initGate(onUnlock) {
-  // Gate modal
   const gate = document.getElementById('gate');
   if (!gate) return;
 
-  // Close on backdrop click
-  gate.addEventListener('click', (e) => {
-    if (e.target === gate) hideGate();
-  });
+  // If already unlocked on load
+  if (unlocked) onUnlock?.();
+
+  // Close on backdrop
+  gate.addEventListener('click', e => { if (e.target === gate) hideGate(); });
 
   // Close button
   document.getElementById('gate-close')?.addEventListener('click', hideGate);
 
-  // Submit button
-  document.getElementById('gate-submit')?.addEventListener('click', () => {
-    submitGate(onUnlock);
-  });
+  // Submit
+  document.getElementById('gate-submit')?.addEventListener('click', submitGate);
 
-  // Enter key in inputs
+  // Enter key
   ['gate-name', 'gate-email', 'gate-venue'].forEach(id => {
-    document.getElementById(id)?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') submitGate(onUnlock);
+    document.getElementById(id)?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitGate();
     });
   });
 
-  // All "get access" triggers
+  // All data-gate triggers
   document.querySelectorAll('[data-gate]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      showGate();
-    });
+    el.addEventListener('click', e => { e.preventDefault(); showGate(); });
   });
 
-  // Escape key
-  document.addEventListener('keydown', (e) => {
+  // Escape
+  document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && gate.classList.contains('is-open')) hideGate();
   });
 }
