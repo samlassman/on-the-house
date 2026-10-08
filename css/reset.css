@@ -1,31 +1,18 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
-
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
-  background: var(--cream);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
-  line-height: 1.7;
+  line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 img, video { max-width: 100%; display: block; }
-button { cursor: pointer; }
+button { cursor: pointer; font-family: inherit; }
 a { text-decoration: none; }
 input, textarea, select { font-family: inherit; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--cream-mid); }
-::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--ink-faint); }

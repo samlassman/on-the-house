@@ -1,95 +1,58 @@
 @media (max-width: 1024px) {
   .nav { padding: 0 var(--sp-6); }
-  .section { padding: var(--sp-24) var(--sp-6); }
-  .hero__left  { padding: var(--sp-20) var(--sp-6); }
-  .hero__right { padding: var(--sp-20) var(--sp-6); }
-  .two-col--wide { gap: var(--sp-12); }
-  .two-col__divider { padding-right: var(--sp-12); }
-  .footer__main { padding: 0 var(--sp-6) var(--sp-8); }
-  .footer { padding: var(--sp-12) var(--sp-6); }
+  .section { padding: var(--sp-20) var(--sp-6); }
+  .hero__main { padding: var(--sp-16) var(--sp-6) var(--sp-10); }
+  .hero__stats .hero__stat { padding: var(--sp-6); }
+  .free-prompt { padding: var(--sp-10) var(--sp-6); }
+  .nudge { padding: var(--sp-5) var(--sp-6); }
+  .cat-nav { padding: 0 0; }
+  .voice-box { padding: var(--sp-8) var(--sp-6); }
+  .footer__also { padding: var(--sp-6); }
+  .footer__main { padding: var(--sp-6); }
+  .what { padding: var(--sp-20) var(--sp-6); }
 }
 
 @media (max-width: 860px) {
-  /* Hide nav links, keep logo + CTA */
   .nav__links--desktop { display: none; }
 
-  /* Hero stacks */
-  .hero {
-    grid-template-columns: 1fr;
-    min-height: auto;
+  /* Hero stacks vertically */
+  .hero__main { grid-template-columns: 1fr; }
+  .hero__right {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding-left: 0;
+    padding-top: var(--sp-8);
   }
-  .hero__left {
-    padding: 64px var(--sp-6);
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-  .hero__right { padding: 64px var(--sp-6); }
+  .hero__left { padding-right: 0; }
+  .hero__stats { grid-template-columns: repeat(3, 1fr); }
 
-  /* Layouts stack */
-  .two-col         { grid-template-columns: 1fr; }
-  .two-col__divider {
-    border-right: none;
-    padding-right: 0;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: var(--sp-12);
-  }
-  .sidebar-layout  { grid-template-columns: 1fr; }
-  .vertical-label  { writing-mode: horizontal-tb; transform: none; }
-  .nl              { grid-template-columns: 1fr; }
-
-  /* Pillars and steps stack */
+  /* Layouts */
+  .what { grid-template-columns: 1fr; gap: var(--sp-8); }
   .pillars { grid-template-columns: 1fr; }
-  .steps   { grid-template-columns: 1fr; }
-
-  /* Prompt grid goes 1 col */
+  .steps { grid-template-columns: 1fr; }
   .pgrid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-right { grid-template-columns: 1fr 1fr; }
 
-  /* Nudge bar stacks */
-  .nudge {
-    flex-direction: column;
-    text-align: center;
-    padding: var(--sp-6);
-  }
-
-  /* Free prompt padding */
-  .free-prompt { padding: 28px var(--sp-6); }
-
-  /* CTA bg text scales down */
-  .cta-section__bg-text { font-size: 60px; }
+  /* Nudge stacks */
+  .nudge { flex-direction: column; text-align: center; padding: var(--sp-6); }
 
   /* Footer */
-  .footer__main {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: var(--sp-5);
-  }
-  .footer__nav  { justify-content: center; }
+  .footer__main { grid-template-columns: 1fr; text-align: center; }
+  .footer__nav { justify-content: center; }
   .footer__right { text-align: center; }
-  .footer__also {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--sp-4);
-  }
+  .footer__also { flex-direction: column; text-align: center; gap: var(--sp-4); }
 
-  /* Toolkit */
-  .tk-head h2 { margin-bottom: 10px; }
-
-  /* Section padding */
-  .section { padding: 64px var(--sp-6); }
-
-  /* Voice box */
-  .voice-box { padding: var(--sp-6); }
-
-  /* Modal */
-  .modal__box { padding: var(--sp-8) var(--sp-6); }
-  .gate__box  { padding: var(--sp-8) var(--sp-6); }
+  /* CTA */
+  .cta-section__bg-text { font-size: 60px; }
+  .cta-sub { margin-left: 0; }
 }
 
 @media (max-width: 480px) {
-  .stats { gap: var(--sp-6); }
-  .stat__n { font-size: 36px; }
-  .cat-nav { gap: 6px; }
-  .cat-pill { font-size: 9px; padding: 7px 14px; }
-  .free-prompt__actions { flex-direction: column; align-items: flex-start; }
-  .btn { padding: 14px 24px; }
+  .hero__stats { grid-template-columns: 1fr 1fr; }
+  .hero__stat:last-child { grid-column: span 2; }
+  .about-right { grid-template-columns: 1fr; }
+  .hero__title { font-size: 64px; }
+  .cat-nav { overflow-x: auto; white-space: nowrap; }
+  .free-prompt__header { grid-template-columns: 1fr; }
 }
