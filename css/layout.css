@@ -654,3 +654,13 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .slide-up { animation: slideUp 0.35s ease forwards; }
+
+/* ── HERO FIXES ───────────────────────────────────── */
+.hero__main {
+  min-height: calc(100vh - var(--nav-h) - 120px);
+  align-items: center;
+}
+.hero__kicker { margin-top: var(--sp-6); }
+
+/* Tighten pillar section gap */
+.section--what { padding-bottom: var(--sp-16); }
