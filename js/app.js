@@ -466,7 +466,7 @@ function submitGate() {
   }
 
   const qs = new URLSearchParams({ email, ref: 'on-the-house', ...(venue && { venue }) });
-  window.location.href = `https://imvouched.co.uk/app.html?${qs.toString()}`;
+  window.location.href = `https://imvouched.co.uk/onthehouse.html?${qs.toString()}`;
 }
 
 // ── RENDER PROMPTS ────────────────────────────────────────
